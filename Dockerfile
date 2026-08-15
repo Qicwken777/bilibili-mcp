@@ -8,7 +8,7 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt mcp-proxy
 
 COPY mcp_server.py bili_login.py ./
 COPY entrypoint.sh /entrypoint.sh
@@ -19,5 +19,10 @@ RUN chmod +x /entrypoint.sh
 RUN mkdir -p /app/data
 VOLUME ["/app/data"]
 
+# mcp-proxy wraps mcp_server.py's stdio session and re-exposes it as an
+# SSE endpoint on this port, so remote MCP clients (like ChatLuna/Koishi)
+# can connect over the network instead of spawning a local process.
+EXPOSE 8080
+
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["python", "mcp_server.py"]
+CMD ["mcp-proxy", "--host=0.0.0.0", "--port=8080", "python", "mcp_server.py"]
