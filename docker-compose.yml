@@ -1,0 +1,15 @@
+services:
+  bilibili-mcp:
+    build: .
+    image: bilibili-mcp:latest
+    container_name: bilibili-mcp
+    stdin_open: true   # keep stdin open for MCP's stdio transport
+    tty: false
+    volumes:
+      - bili-data:/app/data
+      # optional: point this at a folder holding videos you want to upload,
+      # then pass e.g. /videos/myclip.mp4 as video_path in bili_upload_video
+      # - ./videos:/videos
+
+volumes:
+  bili-data:
